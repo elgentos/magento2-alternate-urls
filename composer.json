@@ -1,0 +1,35 @@
+{
+    "name": "elgentos/magento2-alternate-urls",
+    "description": "Add alternate URLs (hreflang) to all pages in the webshop",
+    "type": "magento2-module",
+    "license": "proprietary",
+    "autoload": {
+        "files": [
+            "src/registration.php"
+        ],
+        "psr-4": {
+            "Elgentos\\AlternateUrls\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Elgentos\\AlternateUrls\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^7.4",
+        "magento/framework": "^103.0",
+        "magento/module-catalog": "^104.0"
+    },
+    "require-dev": {
+        "mediact/coding-standard-magento2": "@stable",
+        "mediact/testing-suite": "^2.9"
+    },
+    "repositories": {
+        "magento": {
+            "type": "composer",
+            "url": "https://repo.magento.com/"
+        }
+    }
+}
