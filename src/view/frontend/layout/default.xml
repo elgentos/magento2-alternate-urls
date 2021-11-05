@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="head.additional">
+            <block name="alternate_urls" class="Elgentos\AlternateUrls\Block\AlternateUrls" template="Elgentos_AlternateUrls::alternate_urls.phtml">
+                <arguments>
+                    <argument name="typeInstances" xsi:type="array">
+                        <item name="default" xsi:type="object">Elgentos\AlternateUrls\Type\DefaultType</item>
+                        <item name="catalog_product_view" xsi:type="object">Elgentos\AlternateUrls\Type\Product</item>
+                        <item name="catalog_category_view" xsi:type="object">Elgentos\AlternateUrls\Type\Category</item>
+                        <item name="cms_page_view" xsi:type="object">Elgentos\AlternateUrls\Type\CmsPage</item>
+                    </argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+    </body>
+</page>

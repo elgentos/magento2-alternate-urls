@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+use Elgentos\AlternateUrls\Block\AlternateUrls;
+use Elgentos\AlternateUrls\Type\TypeInterface;
+use Magento\Framework\Escaper;
+
+/** @var AlternateUrls $block */
+/** @var Escaper $escaper */
+
+/** @var TypeInterface $typeInstance */
+$typeInstance = $block->getTypeInstance();
+?>
+
+<?php if ($typeInstance): ?>
+    <?php foreach ($typeInstance->getAlternateUrls() as $alternateUrl): ?>
+    <link rel="alternate" hreflang="<?= $escaper->escapeHtmlAttr($alternateUrl['hreflang']) ?>" href="<?= $escaper->escapeUrl($alternateUrl['url']) ?>"/>
+    <?php endforeach ?>
+<?php endif ?>
