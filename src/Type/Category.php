@@ -48,7 +48,6 @@ class Category extends AbstractType implements TypeInterface, ArgumentInterface
         $result       = [];
 
         foreach ($this->getMapping() as $item) {
-            /** @var CategoryInterface $category */
             try {
                 $category = $currentStore->getId() === $item['store_id']
                     ? $currentCategory
@@ -71,7 +70,7 @@ class Category extends AbstractType implements TypeInterface, ArgumentInterface
 
     public function getCurrentCategory(): ?CategoryInterface
     {
-        if ($this->currentCategory) {
+        if (!$this->currentCategory) {
             $this->currentCategory = $this->registry->registry('current_category');
         }
 

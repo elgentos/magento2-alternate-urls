@@ -7,13 +7,9 @@ namespace Elgentos\AlternateUrls\Block;
 use Elgentos\AlternateUrls\Type\TypeInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Request\Http;
-use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\Serialize\SerializerInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Element\Template;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
-use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
 
 class AlternateUrls extends Template
 {
@@ -41,6 +37,10 @@ class AlternateUrls extends Template
         $request       = $this->getRequest();
         $pageType      = $request->getFullActionName();
         $typeInstances = $this->getData('typeInstances');
+
+        if (!$typeInstances || !isset($typeInstances['default'])) {
+            return null;
+        }
 
         if (isset($typeInstances[$pageType])) {
             return $typeInstances[$pageType];

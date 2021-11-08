@@ -73,11 +73,7 @@ class Product extends AbstractType implements TypeInterface, ArgumentInterface
     private function getCurrentProduct(): ?ProductInterface
     {
         if (!$this->currentProduct) {
-            try {
-                $this->currentProduct = $this->registry->registry('current_product');
-            } catch (NoSuchEntityException $e) {
-                return null;
-            }
+            $this->currentProduct = $this->registry->registry('current_product');
         }
 
         return $this->currentProduct;

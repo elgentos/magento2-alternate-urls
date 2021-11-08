@@ -33,7 +33,7 @@ abstract class AbstractType
         $this->request      = $request;
     }
 
-    protected function getMapping(): array
+    public function getMapping(): array
     {
         return $this->serializer->unserialize(
             $this->scopeConfig->getValue(
@@ -43,7 +43,7 @@ abstract class AbstractType
         );
     }
 
-    protected function getCurrentUrlWithoutParameters(StoreInterface $store): string
+    public function getCurrentUrlWithoutParameters(StoreInterface $store): string
     {
         $requestString = ltrim($this->request->getRequestString(), '/');
         $storeUrl      = $store->getBaseUrl();
@@ -52,19 +52,7 @@ abstract class AbstractType
             return $storeUrl;
         }
 
-        $storeParsedUrl   = parse_url($storeUrl);
-        $storeParsedQuery = [];
-
-        if (isset($storeParsedUrl['query'])) {
-            parse_str($storeParsedUrl['query'], $storeParsedQuery);
-        }
-
-        $currQuery = $this->request->getQueryValue();
-
-        foreach ($currQuery as $key => $value) {
-            $storeParsedQuery[$key] = $value;
-        }
-
+        $storeParsedUrl     = parse_url($storeUrl);
         $requestStringParts = explode('?', $requestString, 2);
         $requestStringPath  = $requestStringParts[0];
 

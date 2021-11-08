@@ -84,7 +84,6 @@ class StoreCodeColumn extends Select
             $website = $store->getWebsite();
 
             $optionArray[] = [
-                'name' => 'boe',
                 'label' =>
                     $website->getName() .
                     ' - ' .
