@@ -31,5 +31,23 @@
             "type": "composer",
             "url": "https://repo.magento.com/"
         }
+    },
+    "archive": {
+        "exclude": [
+            "/.gitignore",
+            "/tests",
+            "/grumphp.yml",
+            "/pdepend.xml",
+            "/phpstan.neon",
+            "/phpunit.xml",
+            "/phpcs.xml",
+            "/phpmd.xml",
+            "/package.json",
+            "/.eslintrc.json",
+            "/.eslintignore"
+        ]
+    },
+    "config": {
+        "sort-packages": true
     }
 }
