@@ -42,7 +42,10 @@ class AlternateUrls extends Template
             return null;
         }
 
-        if (isset($typeInstances[$pageType])) {
+        if (
+            isset($typeInstances[$pageType]) &&
+            $typeInstances[$pageType] instanceof TypeInterface
+        ) {
             return $typeInstances[$pageType];
         }
 
