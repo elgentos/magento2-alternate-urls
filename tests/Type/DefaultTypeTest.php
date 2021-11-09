@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Copyright MediaCT. All rights reserved.
- * https://www.mediact.nl
+ * Copyright Elgentos. All rights reserved.
+ * https://www.elgentos.nl
  */
 
 declare(strict_types=1);

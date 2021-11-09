@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Elgentos\AlternateUrls\Block\AlternateUrls;
+use Elgentos\AlternateUrls\Model\AlternateUrl;
 use Elgentos\AlternateUrls\Type\TypeInterface;
 use Magento\Framework\Escaper;
 
@@ -11,10 +12,14 @@ use Magento\Framework\Escaper;
 
 /** @var TypeInterface $typeInstance */
 $typeInstance = $block->getTypeInstance();
-?>
 
-<?php if ($typeInstance): ?>
-    <?php foreach ($typeInstance->getAlternateUrls() as $alternateUrl): ?>
-    <link rel="alternate" hreflang="<?= $escaper->escapeHtmlAttr($alternateUrl['hreflang']) ?>" href="<?= $escaper->escapeUrl($alternateUrl['url']) ?>"/>
-    <?php endforeach ?>
-<?php endif ?>
+if (!$typeInstance instanceof TypeInterface) {
+    return;
+}
+?>
+<?php /** @var AlternateUrl $alternateUrl */ ?>
+<?php foreach ($typeInstance->getAlternateUrls() as $alternateUrl): ?>
+<link rel="alternate"
+      hreflang="<?= $escaper->escapeHtmlAttr($alternateUrl->getHreflang()) ?>"
+      href="<?= $escaper->escapeUrl($alternateUrl->getUrl()) ?>"/>
+<?php endforeach ?>

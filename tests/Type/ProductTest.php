@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Copyright MediaCT. All rights reserved.
- * https://www.mediact.nl
+ * Copyright Elgentos. All rights reserved.
+ * https://www.elgentos.nl
  */
 
 declare(strict_types=1);
@@ -12,6 +12,7 @@ namespace Elgentos\AlternateUrls\Tests\Type;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product as ProductModel;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Request\Http;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Registry;
@@ -27,6 +28,11 @@ use Elgentos\AlternateUrls\Type\Product;
 class ProductTest extends TestCase
 {
     /**
+     * @covers ::getStoreProduct
+     * @covers ::getAlternateUrls
+     * @covers ::getCurrentProduct
+     * @covers ::__construct
+     *
      * @dataProvider setAlternateUrlsDataProvider
      */
     public function testGetAlternateUrls(
@@ -49,7 +55,7 @@ class ProductTest extends TestCase
             ->willReturn(1);
 
         $storeManager = $this->createMock(StoreManagerInterface::class);
-        $storeManager->expects($hasRegisteredProduct ? self::once() : self::never())
+        $storeManager->expects(self::any())
             ->method('getStore')
             ->willReturn($store);
 
@@ -65,11 +71,11 @@ class ProductTest extends TestCase
                 ->willReturn($this->createProductInstance());
         }
 
-        $subject           = new Product(
+        $subject = new Product(
             $serializer,
             $this->createMock(ScopeConfigInterface::class),
             $storeManager,
-            $this->createMock(RequestInterface::class),
+            $this->createMock(Http::class),
             $registry,
             $productRepository
         );

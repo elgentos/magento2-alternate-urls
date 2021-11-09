@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Copyright MediaCT. All rights reserved.
- * https://www.mediact.nl
+ * Copyright Elgentos. All rights reserved.
+ * https://www.elgentos.nl
  */
 
 declare(strict_types=1);
@@ -85,13 +85,12 @@ class StoreCodeColumnTest extends TestCase
     {
         $counter = 3;
         $stores  = [];
-
         $website = $this->createMock(Website::class);
         $website->expects(self::any())
             ->method('getName')
             ->willReturn('Website Name');
 
-        $store   = $this->createMock(Store::class);
+        $store = $this->createMock(Store::class);
         $store->expects(self::any())
             ->method('getName')
             ->willReturn('Store Name');

@@ -76,22 +76,12 @@ class StoreCodeColumn extends Select
      */
     private function getSourceOptions(): array
     {
-        $stores = $this->storeManager->getStores();
-
-        $optionArray = [];
-        /** @var Store $store */
-        foreach ($stores as $store) {
-            $website = $store->getWebsite();
-
-            $optionArray[] = [
-                'label' =>
-                    $website->getName() .
-                    ' - ' .
-                    $store->getName(),
+        return array_map(
+            fn (Store $store) => [
+                'label' => $store->getWebsite()->getName() . ' - ' . $store->getName(),
                 'value' => $store->getId()
-            ];
-        }
-
-        return $optionArray;
+            ],
+            $this->storeManager->getStores()
+        );
     }
 }

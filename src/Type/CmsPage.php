@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Elgentos\AlternateUrls\Type;
 
+use Elgentos\AlternateUrls\Model\AlternateUrl;
 use Magento\Cms\Model\Page;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Escaper;
 use Magento\Framework\Registry;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
@@ -21,9 +23,12 @@ class CmsPage extends AbstractType implements TypeInterface, ArgumentInterface
         StoreManagerInterface $storeManager,
         RequestInterface $request
     ) {
-        parent::__construct($serializer, $scopeConfig, $storeManager, $request);
-
-        $this->request = $request;
+        parent::__construct(
+            $serializer,
+            $scopeConfig,
+            $storeManager,
+            $request
+        );
     }
 
     public function getAlternateUrls(): array
@@ -35,12 +40,14 @@ class CmsPage extends AbstractType implements TypeInterface, ArgumentInterface
         foreach ($this->getMapping() as $item) {
             // Because there is no actual link between CMS pages on different
             // stores we will only return the current store's URL
-            if ($currentStore->getId() === $item['store_id']) {
-                $result[] = [
-                    'hreflang' => $item['hreflang'],
-                    'url' => $this->getCurrentUrlWithoutParameters($currentStore)
-                ];
+            if ($currentStore->getId() !== $item['store_id']) {
+                continue;
             }
+
+            $result[] = new AlternateUrl(
+                $item['hreflang'],
+                $this->getCurrentUrlWithoutParameters($currentStore)
+            );
         }
 
         return $result;

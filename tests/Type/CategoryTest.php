@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Copyright MediaCT. All rights reserved.
- * https://www.mediact.nl
+ * Copyright Elgentos. All rights reserved.
+ * https://www.elgentos.nl
  */
 
 declare(strict_types=1);
@@ -13,6 +13,7 @@ use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Catalog\Model\Category as CategoryModel;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Request\Http;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Registry;
@@ -29,16 +30,16 @@ class CategoryTest extends TestCase
 {
     /**
      * @covers ::getAlternateUrls
-     * @covers ::__construct
      * @covers ::getCurrentCategory
+     * @covers ::getStoreCategory
+     * @covers ::__construct
      *
      * @dataProvider setAlternateUrlsDataProvider
      */
     public function testGetAlternateUrls(
         bool $hasRegisteredCategory = true,
         bool $willThrowCategoryException = false
-    ): void
-    {
+    ): void {
         $registry = $this->createMock(Registry::class);
         $registry->expects(self::once())
             ->method('registry')
@@ -55,7 +56,7 @@ class CategoryTest extends TestCase
             ->willReturn(1);
 
         $storeManager = $this->createMock(StoreManagerInterface::class);
-        $storeManager->expects($hasRegisteredCategory ? self::once() : self::never())
+        $storeManager->expects(self::any())
             ->method('getStore')
             ->willReturn($store);
 
@@ -75,7 +76,7 @@ class CategoryTest extends TestCase
             $serializer,
             $this->createMock(ScopeConfigInterface::class),
             $storeManager,
-            $this->createMock(RequestInterface::class),
+            $this->createMock(Http::class),
             $registry,
             $categoryRepository
         );

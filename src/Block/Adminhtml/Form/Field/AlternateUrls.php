@@ -48,15 +48,11 @@ class AlternateUrls extends AbstractFieldArray
      */
     private function getStoreCodeRenderer(): BlockInterface
     {
-        if (!$this->storeCodeRenderer) {
-            $this->storeCodeRenderer = $this->getLayout()->createBlock(
-                StoreCodeColumn::class,
-                '',
-                ['data' => ['is_render_to_js_template' => true]]
-            );
-        }
-
-        return $this->storeCodeRenderer;
+        return $this->storeCodeRenderer ??= $this->getLayout()->createBlock(
+            StoreCodeColumn::class,
+            '',
+            ['data' => ['is_render_to_js_template' => true]]
+        );
     }
 
     /**

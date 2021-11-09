@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Elgentos\AlternateUrls\Type;
 
+use Elgentos\AlternateUrls\Model\AlternateUrl;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Api\Data\CategoryInterface;
+use Magento\Catalog\Model\Category as CategoryModel;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Escaper;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Registry;
 use Magento\Framework\Serialize\Serializer\Json;
@@ -30,7 +33,12 @@ class Category extends AbstractType implements TypeInterface, ArgumentInterface
         Registry $registry,
         CategoryRepositoryInterface $categoryRepository
     ) {
-        parent::__construct($serializer, $scopeConfig, $storeManager, $request);
+        parent::__construct(
+            $serializer,
+            $scopeConfig,
+            $storeManager,
+            $request
+        );
 
         $this->registry           = $registry;
         $this->categoryRepository = $categoryRepository;
@@ -44,22 +52,14 @@ class Category extends AbstractType implements TypeInterface, ArgumentInterface
             return [];
         }
 
-        $currentStore = $this->storeManager->getStore();
-        $result       = [];
+        $result = [];
 
         foreach ($this->getMapping() as $item) {
             try {
-                $category = $currentStore->getId() === $item['store_id']
-                    ? $currentCategory
-                    : $this->categoryRepository->get(
-                        $currentCategory->getId(),
-                        $item['store_id']
-                    );
-
-                $result[] = [
-                    'hreflang' => $item['hreflang'],
-                    'url' => $category->getUrl()
-                ];
+                $result[] = new AlternateUrl(
+                    $item['hreflang'],
+                    $this->getStoreCategory((int) $item['store_id'])->getUrl()
+                );
             } catch (NoSuchEntityException $e) {
                 continue;
             }
@@ -70,10 +70,26 @@ class Category extends AbstractType implements TypeInterface, ArgumentInterface
 
     public function getCurrentCategory(): ?CategoryInterface
     {
-        if (!$this->currentCategory) {
-            $this->currentCategory = $this->registry->registry('current_category');
-        }
+        return $this->currentCategory ??= $this->registry->registry('current_category');
+    }
 
-        return $this->currentCategory;
+    /**
+     * @throws NoSuchEntityException
+     */
+    private function getStoreCategory(
+        int $storeId
+    ): CategoryModel {
+        $currentStore    = $this->storeManager->getStore();
+        $currentCategory = $this->getCurrentCategory();
+
+        /** @var CategoryModel $category */
+        $category = $currentStore->getId() === $storeId
+            ? $currentCategory
+            : $this->categoryRepository->get(
+                $currentCategory->getId(),
+                $storeId
+            );
+
+        return $category;
     }
 }

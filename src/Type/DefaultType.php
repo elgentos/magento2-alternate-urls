@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Elgentos\AlternateUrls\Type;
 
+use Elgentos\AlternateUrls\Model\AlternateUrl;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Serialize\Serializer\Json;
@@ -13,15 +14,6 @@ use Magento\Store\Model\StoreManagerInterface;
 
 class DefaultType extends AbstractType implements TypeInterface, ArgumentInterface
 {
-    public function __construct(
-        Json $serializer,
-        ScopeConfigInterface $scopeConfig,
-        StoreManagerInterface $storeManager,
-        RequestInterface $request
-    ) {
-        parent::__construct($serializer, $scopeConfig, $storeManager, $request);
-    }
-
     public function getAlternateUrls(): array
     {
         $result  = [];
@@ -35,10 +27,10 @@ class DefaultType extends AbstractType implements TypeInterface, ArgumentInterfa
                 ? $currentStore
                 : $this->storeManager->getStore($item['store_id']);
 
-            $result[] = [
-                'hreflang' => $item['hreflang'],
-                'url' => $this->getCurrentUrlWithoutParameters($store)
-            ];
+            $result[] = new AlternateUrl(
+                $item['hreflang'],
+                $this->getCurrentUrlWithoutParameters($store)
+            );
         }
 
         return $result;

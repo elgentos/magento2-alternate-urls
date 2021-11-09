@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Copyright MediaCT. All rights reserved.
- * https://www.mediact.nl
+ * Copyright Elgentos. All rights reserved.
+ * https://www.elgentos.nl
  */
 
 declare(strict_types=1);
@@ -32,14 +32,13 @@ class AlternateUrlsTest extends TestCase
     public function testGetTypeInstance(
         bool $isEnabled = true,
         array $data = []
-    )
-    {
+    ) {
         $scopeConfig = $this->createMock(ScopeConfigInterface::class);
         $scopeConfig->expects(self::once())
             ->method('isSetFlag')
             ->willReturn($isEnabled);
 
-        $request    = $this->createMock(Http ::class);
+        $request = $this->createMock(Http ::class);
         $request->expects(self::any())
             ->method('getFullActionName')
             ->willReturn('catalog_product_view');

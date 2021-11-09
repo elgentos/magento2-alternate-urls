@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Elgentos\AlternateUrls\Type;
 
+use Elgentos\AlternateUrls\Model\AlternateUrl;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Model\Product as ProductModel;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Escaper;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Registry;
 use Magento\Framework\Serialize\Serializer\Json;
@@ -30,7 +33,12 @@ class Product extends AbstractType implements TypeInterface, ArgumentInterface
         Registry $registry,
         ProductRepositoryInterface $productRepository
     ) {
-        parent::__construct($serializer, $scopeConfig, $storeManager, $request);
+        parent::__construct(
+            $serializer,
+            $scopeConfig,
+            $storeManager,
+            $request
+        );
 
         $this->registry          = $registry;
         $this->productRepository = $productRepository;
@@ -44,24 +52,14 @@ class Product extends AbstractType implements TypeInterface, ArgumentInterface
             return [];
         }
 
-        $currentStore = $this->storeManager->getStore();
-        $result       = [];
+        $result = [];
 
         foreach ($this->getMapping() as $item) {
-            /** @var ProductInterface $product */
             try {
-                $product = $currentStore->getId() === $item['store_id']
-                    ? $currentProduct
-                    : $this->productRepository->getById(
-                        $currentProduct->getId(),
-                        false,
-                        $item['store_id']
-                    );
-
-                $result[] = [
-                    'hreflang' => $item['hreflang'],
-                    'url' => $product->getProductUrl()
-                ];
+                $result[] = new AlternateUrl(
+                    $item['hreflang'],
+                    $this->getStoreProduct((int) $item['store_id'])->getProductUrl()
+                );
             } catch (NoSuchEntityException $e) {
                 continue;
             }
@@ -72,10 +70,27 @@ class Product extends AbstractType implements TypeInterface, ArgumentInterface
 
     private function getCurrentProduct(): ?ProductInterface
     {
-        if (!$this->currentProduct) {
-            $this->currentProduct = $this->registry->registry('current_product');
-        }
+        return $this->currentProduct ??= $this->registry->registry('current_product');
+    }
 
-        return $this->currentProduct;
+    /**
+     * @throws NoSuchEntityException
+     */
+    private function getStoreProduct(
+        int $storeId
+    ): ProductModel {
+        $currentStore   = $this->storeManager->getStore();
+        $currentProduct = $this->getCurrentProduct();
+
+        /** @var ProductModel $product */
+        $product = $currentStore->getId() === $storeId
+            ? $currentProduct
+            : $this->productRepository->getById(
+                $currentProduct->getId(),
+                false,
+                $storeId
+            );
+
+        return $product;
     }
 }

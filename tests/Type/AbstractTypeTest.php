@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Copyright MediaCT. All rights reserved.
- * https://www.mediact.nl
+ * Copyright Elgentos. All rights reserved.
+ * https://www.elgentos.nl
  */
 
 declare(strict_types=1);
@@ -40,7 +40,7 @@ class AbstractTypeTest extends TestCase
             ->willReturn('string');
 
         $storeManager = $this->createMock(StoreManagerInterface::class);
-        $request      = $this->createMock(RequestInterface::class);
+        $request      = $this->createMock(Http::class);
         $subject      = $this->createAbstractTypeInstance(
             $serializer,
             $scopeConfig,
@@ -92,20 +92,12 @@ class AbstractTypeTest extends TestCase
         ];
     }
 
-    /**
-     * @param $serializer
-     * @param $scopeConfig
-     * @param $storeManager
-     * @param $request
-     *
-     * @return AbstractType
-     */
     private function createAbstractTypeInstance(
-        $serializer,
-        $scopeConfig,
-        $storeManager,
-        $request
-    ) {
+        Json $serializer,
+        ScopeConfigInterface $scopeConfig,
+        StoreManagerInterface $storeManager,
+        Http $request
+    ): AbstractType {
         return new class ($serializer, $scopeConfig, $storeManager, $request) extends AbstractType {
         };
     }
