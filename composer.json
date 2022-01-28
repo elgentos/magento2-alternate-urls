@@ -19,8 +19,8 @@
     "minimum-stability": "stable",
     "require": {
         "php": "^7.4",
-        "magento/framework": "^103.0",
-        "magento/module-catalog": "^104.0"
+        "magento/framework": "^102.0.7||^103.0",
+        "magento/module-catalog": "^103.0.7||^104.0"
     },
     "require-dev": {
         "mediact/coding-standard-magento2": "@stable",
