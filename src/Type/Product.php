@@ -86,22 +86,23 @@ class Product extends AbstractType implements TypeInterface, ArgumentInterface
         $currentStore   = $this->storeManager->getStore();
         $currentProduct = $this->getCurrentProduct();
         $websiteId      = $this->getWebsiteByStoreId($storeId);
+        $result         = null;
 
-        if (!in_array($websiteId, $currentProduct->getWebsiteIds() ?? [])) {
-            return null;
+        if (!in_array($websiteId, $currentProduct->getWebsiteIds() ?? [], true)) {
+            try {
+                $result = $currentStore->getId() === $storeId
+                    ? $currentProduct
+                    : $this->productRepository->getById(
+                        $currentProduct->getId(),
+                        false,
+                        $storeId
+                    );
+            } catch (NoSuchEntityException $e) {
+                $result = null;
+            }
         }
 
-        try {
-            return $currentStore->getId() === $storeId
-                ? $currentProduct
-                : $this->productRepository->getById(
-                    $currentProduct->getId(),
-                    false,
-                    $storeId
-                );
-        } catch (NoSuchEntityException $e) {
-            return null;
-        }
+        return $result;
     }
 
     /**
