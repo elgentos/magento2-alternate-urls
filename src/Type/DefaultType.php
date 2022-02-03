@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Elgentos\AlternateUrls\Type;
 
 use Elgentos\AlternateUrls\Model\AlternateUrl;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\RequestInterface;
-use Magento\Framework\Serialize\Serializer\Json;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
 
 class DefaultType extends AbstractType implements TypeInterface, ArgumentInterface
 {
+    /**
+     * @throws NoSuchEntityException
+     */
     public function getAlternateUrls(): array
     {
         $result  = [];

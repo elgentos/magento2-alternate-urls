@@ -7,7 +7,6 @@ namespace Elgentos\AlternateUrls\Block;
 use Elgentos\AlternateUrls\Type\TypeInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Request\Http;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Element\Template;
 use Magento\Store\Model\ScopeInterface;
 

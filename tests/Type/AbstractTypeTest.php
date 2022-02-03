@@ -31,26 +31,26 @@ class AbstractTypeTest extends TestCase
      */
     public function testGetMapping()
     {
-        $serializer = $this->createMock(Json::class);
-        $serializer->expects(self::once())
-            ->method('unserialize')
-            ->willReturn([]);
-
-        $scopeConfig = $this->createMock(ScopeConfigInterface::class);
-        $scopeConfig->expects(self::once())
-            ->method('getValue')
-            ->willReturn('string');
-
-        $storeManager = $this->createMock(StoreManagerInterface::class);
-        $request      = $this->createMock(Http::class);
-        $subject      = $this->createAbstractTypeInstance(
-            $serializer,
-            $scopeConfig,
-            $storeManager,
-            $request
+        $subject = $this->createAbstractTypeInstance(
+            $this->createSerializerMock(),
+            $this->createScopeConfigMock(),
+            $this->createMock(StoreManagerInterface::class),
+            $this->createMock(Http::class)
         );
 
         $this->assertIsArray($subject->getMapping());
+    }
+
+    public function testModifyUrl()
+    {
+        $subject = $this->createAbstractTypeInstance(
+            $this->createSerializerMock(false),
+            $this->createScopeConfigMock(false),
+            $this->createMock(StoreManagerInterface::class),
+            $this->createMock(Http::class)
+        );
+
+        $subject->modifyUrl('https://www.google.com');
     }
 
     /**
@@ -68,8 +68,8 @@ class AbstractTypeTest extends TestCase
             ->willReturn($requestString);
 
         $subject = $this->createAbstractTypeInstance(
-            $this->createMock(Json::class),
-            $this->createMock(ScopeConfigInterface::class),
+            $this->createSerializerMock(false),
+            $this->createScopeConfigMock(false),
             $this->createMock(StoreManagerInterface::class),
             $request
         );
@@ -112,5 +112,30 @@ class AbstractTypeTest extends TestCase
             'invalidUrl' => [''],
             'validUrl' => ['https://www.domain.com/', '/custom-path'],
         ];
+    }
+
+    private function createSerializerMock(bool $isCalled = true): Json
+    {
+        $serializer = $this->createMock(Json::class);
+        $serializer->expects($isCalled ? self::once() : self::never())
+            ->method('unserialize')
+            ->willReturn([]);
+
+        return $serializer;
+    }
+
+    private function createScopeConfigMock(
+        bool $hasValue = true
+    ): ScopeConfigInterface {
+        $scopeConfig = $this->createMock(ScopeConfigInterface::class);
+        $scopeConfig->expects($hasValue ? self::once() : self::never())
+            ->method('getValue')
+            ->willReturn('string');
+
+        $scopeConfig->expects(self::any())
+            ->method('isSetFlag')
+            ->willReturn(true);
+
+        return $scopeConfig;
     }
 }

@@ -28,66 +28,50 @@ use Elgentos\AlternateUrls\Type\Product;
 class ProductTest extends TestCase
 {
     /**
-     * @covers ::getStoreProduct
-     * @covers ::getAlternateUrls
-     * @covers ::getCurrentProduct
-     * @covers ::__construct
-     *
      * @dataProvider setAlternateUrlsDataProvider
      */
     public function testGetAlternateUrls(
         bool $hasRegisteredProduct = true,
-        bool $willThrowProductException = false
+        bool $willThrowProductException = false,
+        bool $willThrowStoreException = false,
+        array $websiteIds = [1,2]
     ): void {
         $registry = $this->createMock(Registry::class);
         $registry->expects(self::once())
             ->method('registry')
-            ->willReturn($this->createProductInstance($hasRegisteredProduct));
+            ->willReturn(
+                $this->createProductInstance($hasRegisteredProduct, $websiteIds)
+            );
 
         $serializer = $this->createMock(Json::class);
         $serializer->expects($hasRegisteredProduct ? self::once() : self::never())
             ->method('unserialize')
             ->willReturn($this->getMappingData());
 
-        $store = $this->createMock(Store::class);
-        $store->expects(self::any())
-            ->method('getId')
-            ->willReturn(1);
-
-        $storeManager = $this->createMock(StoreManagerInterface::class);
-        $storeManager->expects(self::any())
-            ->method('getStore')
-            ->willReturn($store);
-
-        $productRepository = $this->createMock(ProductRepositoryInterface::class);
-
-        if ($willThrowProductException) {
-            $productRepository->expects(self::any())
-                ->method('getById')
-                ->willThrowException(new NoSuchEntityException(__('Category not found')));
-        } else {
-            $productRepository->expects(self::any())
-                ->method('getById')
-                ->willReturn($this->createProductInstance());
-        }
-
         $subject = new Product(
             $serializer,
-            $this->createMock(ScopeConfigInterface::class),
-            $storeManager,
+            $this->createScopeConfigMock(),
+            $this->createStoreManagerMock($willThrowStoreException),
             $this->createMock(Http::class),
             $registry,
-            $productRepository
+            $this->createProductRepositoryMock($willThrowProductException)
         );
+
         $subject->getAlternateUrls();
     }
 
-    private function createProductInstance(bool $hasRegisteredProduct = true): ProductModel
-    {
+    private function createProductInstance(
+        bool $hasRegisteredProduct = true,
+        array $websiteIds = []
+    ): ProductModel {
         $product = $this->createMock(ProductModel::class);
         $product->expects(self::any())
             ->method('getId')
             ->willReturn($hasRegisteredProduct ? 1 : false);
+
+        $product->expects(self::any())
+            ->method('getWebsiteIds')
+            ->willReturn($websiteIds);
 
         $product->expects(self::any())
             ->method('getProductUrl')
@@ -110,7 +94,63 @@ class ProductTest extends TestCase
         return [
             'withRegisteredCategory' => [true],
             'withoutRegisteredCategory' => [false],
-            'willThrowCategoryException' => [true, true]
+            'willThrowCategoryException' => [true, true],
+            'willThrowStoreException' => [true, false, true],
+            'hasNoValidWebsiteId' => [true, false, false, []]
         ];
+    }
+
+    private function createScopeConfigMock(): ScopeConfigInterface
+    {
+        $scopeConfig = $this->createMock(ScopeConfigInterface::class);
+        $scopeConfig->expects(self::any())
+            ->method('isSetFlag')
+            ->willReturn(true);
+
+        return $scopeConfig;
+    }
+
+    private function createStoreManagerMock(
+        bool $willThrowStoreException
+    ): StoreManagerInterface {
+        $store = $this->createMock(Store::class);
+        $store->expects(self::any())
+            ->method('getId')
+            ->willReturn(1);
+
+        $store->expects(self::any())
+            ->method('getWebsiteId')
+            ->willReturn(1);
+
+        $storeManager = $this->createMock(StoreManagerInterface::class);
+
+        if ($willThrowStoreException) {
+            $storeManager->expects(self::any())
+                ->method('getStore')
+                ->willThrowException(new NoSuchEntityException(__('Store not found')));
+        } else {
+            $storeManager->expects(self::any())
+                ->method('getStore')
+                ->willReturn($store);
+        }
+
+        return $storeManager;
+    }
+
+    private function createProductRepositoryMock(bool $willThrowProductException
+    ) {
+        $productRepository = $this->createMock(ProductRepositoryInterface::class);
+
+        if ($willThrowProductException) {
+            $productRepository->expects(self::any())
+                ->method('getById')
+                ->willThrowException(new NoSuchEntityException(__('Category not found')));
+        } else {
+            $productRepository->expects(self::any())
+                ->method('getById')
+                ->willReturn($this->createProductInstance());
+        }
+
+        return $productRepository;
     }
 }

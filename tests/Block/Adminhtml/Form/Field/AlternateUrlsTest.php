@@ -33,10 +33,6 @@ class AlternateUrlsTest extends TestCase
         ObjectManager::setInstance($objectManagerMock);
     }
 
-    /**
-     * @covers ::_prepareToRender
-     * @covers ::getStoreCodeRenderer
-     */
     public function testPrepareToRender(): void
     {
         $subject = new AlternateUrls(
@@ -56,10 +52,6 @@ class AlternateUrlsTest extends TestCase
         $this->assertCount(2, $subject->getColumns());
     }
 
-    /**
-     * @covers ::_prepareArrayRow
-     * @covers ::getStoreCodeRenderer
-     */
     public function testPrepareArrayRow(): void
     {
         $subject = new AlternateUrls(

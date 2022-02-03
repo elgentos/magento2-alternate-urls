@@ -82,19 +82,16 @@ class Category extends AbstractType implements TypeInterface, ArgumentInterface
      */
     private function getStoreCategory(
         int $storeId
-    ): CategoryModel {
+    ): CategoryInterface {
         $currentStore    = $this->storeManager->getStore();
         $currentCategory = $this->getCurrentCategory();
 
-        /** @var CategoryModel $category */
-        $category = $currentStore->getId() === $storeId
+        return $currentStore->getId() === $storeId
             ? $currentCategory
             : $this->categoryRepository->get(
                 $currentCategory->getId(),
                 $storeId
             );
-
-        return $category;
     }
 
     /**

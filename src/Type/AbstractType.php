@@ -7,9 +7,7 @@ namespace Elgentos\AlternateUrls\Type;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\Escaper;
 use Magento\Framework\Serialize\Serializer\Json;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
@@ -46,6 +44,14 @@ abstract class AbstractType
         );
     }
 
+    private function getRemoveStoreParam(): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            'alternate_urls/general/remove_store_param',
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
     public function getCurrentUrlWithoutParameters(Store $store): string
     {
         /** @var Http $request */
@@ -68,5 +74,14 @@ abstract class AbstractType
             . (isset($storeParsedUrl['port']) ? ':' . $storeParsedUrl['port'] : '')
             . $storeParsedUrl['path']
             . $requestStringPath;
+    }
+
+    public function modifyUrl(string $url): string
+    {
+        if (!$this->getRemoveStoreParam()) {
+            return $url;
+        }
+
+        return explode($url, '?', 2)[0] ?? $url;
     }
 }
