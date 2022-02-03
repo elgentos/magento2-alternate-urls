@@ -28,6 +28,8 @@ use Elgentos\AlternateUrls\Type\Product;
 class ProductTest extends TestCase
 {
     /**
+     * @covers ::getAlternateUrls
+     *
      * @dataProvider setAlternateUrlsDataProvider
      */
     public function testGetAlternateUrls(
@@ -137,8 +139,8 @@ class ProductTest extends TestCase
         return $storeManager;
     }
 
-    private function createProductRepositoryMock(bool $willThrowProductException
-    ) {
+    private function createProductRepositoryMock(bool $willThrowProductException): ProductRepositoryInterface
+    {
         $productRepository = $this->createMock(ProductRepositoryInterface::class);
 
         if ($willThrowProductException) {

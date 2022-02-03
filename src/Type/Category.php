@@ -99,6 +99,7 @@ class Category extends AbstractType implements TypeInterface, ArgumentInterface
      */
     private function getCategoryUrl(int $storeId): string
     {
+        /** @var CategoryModel&CategoryInterface $category */
         $category = $this->getStoreCategory($storeId);
 
         return $category->getStore()->getBaseUrl() .

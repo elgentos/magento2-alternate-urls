@@ -23,6 +23,8 @@ use PHPUnit\Framework\TestCase;
 class AlternateUrlsTest extends TestCase
 {
     /**
+     * @covers ::getTypeInstance
+     *
      * @dataProvider setDataProvider
      */
     public function testGetTypeInstance(

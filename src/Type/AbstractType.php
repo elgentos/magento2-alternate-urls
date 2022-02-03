@@ -14,6 +14,9 @@ use Magento\Store\Model\StoreManagerInterface;
 
 abstract class AbstractType
 {
+    private const XML_PATH_URL_MAPPING = 'alternate_urls/general/mapping',
+        XML_PATH_REMOVE_URL_PARAMS     = 'alternate_urls/general/remove_url_params';
+
     private Json $serializer;
 
     private ScopeConfigInterface $scopeConfig;
@@ -38,16 +41,16 @@ abstract class AbstractType
     {
         return $this->serializer->unserialize(
             $this->scopeConfig->getValue(
-                'alternate_urls/general/mapping',
+                self::XML_PATH_URL_MAPPING,
                 ScopeInterface::SCOPE_STORE
             )
         );
     }
 
-    private function getRemoveStoreParam(): bool
+    private function getRemoveUrlParams(): bool
     {
         return $this->scopeConfig->isSetFlag(
-            'alternate_urls/general/remove_store_param',
+            self::XML_PATH_REMOVE_URL_PARAMS,
             ScopeInterface::SCOPE_STORE
         );
     }
@@ -78,7 +81,7 @@ abstract class AbstractType
 
     public function modifyUrl(string $url): string
     {
-        if (!$this->getRemoveStoreParam()) {
+        if (!$this->getRemoveUrlParams()) {
             return $url;
         }
 

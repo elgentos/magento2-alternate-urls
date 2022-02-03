@@ -52,7 +52,7 @@ class Product extends AbstractType implements TypeInterface, ArgumentInterface
         }
 
         return array_reduce(
-            $this->getMapping() ?? [],
+            $this->getMapping(),
             function (array $carry, array $item) {
                 try {
                     $product = $this->getStoreProduct((int) $item['store_id']);
@@ -60,12 +60,13 @@ class Product extends AbstractType implements TypeInterface, ArgumentInterface
                     return $carry;
                 }
 
-                if ($product instanceof ProductInterface && $product->getId()) {
+                if ($product instanceof ProductModel && $product->getId()) {
                     $carry[] = new AlternateUrl(
                         $item['hreflang'],
                         $this->modifyUrl($product->getProductUrl())
                     );
                 }
+
                 return $carry;
             },
             []
@@ -83,12 +84,14 @@ class Product extends AbstractType implements TypeInterface, ArgumentInterface
     private function getStoreProduct(
         int $storeId
     ): ?ProductInterface {
-        $currentStore   = $this->storeManager->getStore();
+        /** @var ProductInterface&ProductModel $currentProduct */
         $currentProduct = $this->getCurrentProduct();
+
+        $currentStore   = $this->storeManager->getStore();
         $websiteId      = $this->getWebsiteByStoreId($storeId);
         $result         = null;
 
-        if (!in_array($websiteId, $currentProduct->getWebsiteIds() ?? [], true)) {
+        if (!in_array($websiteId, $currentProduct->getWebsiteIds(), true)) {
             try {
                 $result = $currentStore->getId() === $storeId
                     ? $currentProduct
@@ -98,7 +101,7 @@ class Product extends AbstractType implements TypeInterface, ArgumentInterface
                         $storeId
                     );
             } catch (NoSuchEntityException $e) {
-                $result = null;
+                return null;
             }
         }
 
