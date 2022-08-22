@@ -8,9 +8,9 @@ use Elgentos\AlternateUrls\Model\AlternateUrl;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Catalog\Model\Category as CategoryModel;
+use Magento\CatalogUrlRewrite\Model\CategoryUrlPathGenerator;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\Escaper;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Registry;
 use Magento\Framework\Serialize\Serializer\Json;
@@ -25,13 +25,16 @@ class Category extends AbstractType implements TypeInterface, ArgumentInterface
 
     private CategoryRepositoryInterface $categoryRepository;
 
+    private CategoryUrlPathGenerator $urlPathGenerator;
+
     public function __construct(
         Json $serializer,
         ScopeConfigInterface $scopeConfig,
         StoreManagerInterface $storeManager,
         RequestInterface $request,
         Registry $registry,
-        CategoryRepositoryInterface $categoryRepository
+        CategoryRepositoryInterface $categoryRepository,
+        CategoryUrlPathGenerator $urlPathGenerator
     ) {
         parent::__construct(
             $serializer,
@@ -42,6 +45,7 @@ class Category extends AbstractType implements TypeInterface, ArgumentInterface
 
         $this->registry           = $registry;
         $this->categoryRepository = $categoryRepository;
+        $this->urlPathGenerator   = $urlPathGenerator;
     }
 
     public function getAlternateUrls(): array
@@ -58,7 +62,7 @@ class Category extends AbstractType implements TypeInterface, ArgumentInterface
             try {
                 $result[] = new AlternateUrl(
                     $item['hreflang'],
-                    $this->getStoreCategory((int) $item['store_id'])->getUrl()
+                    $this->getCategoryUrl((int)$item['store_id'])
                 );
             } catch (NoSuchEntityException $e) {
                 continue;
@@ -91,5 +95,16 @@ class Category extends AbstractType implements TypeInterface, ArgumentInterface
             );
 
         return $category;
+    }
+
+    /**
+     * @throws NoSuchEntityException
+     */
+    private function getCategoryUrl(int $storeId): string
+    {
+        $category = $this->getStoreCategory($storeId);
+
+        return $category->getStore()->getBaseUrl() .
+            $this->urlPathGenerator->getUrlPathWithSuffix($category);
     }
 }
