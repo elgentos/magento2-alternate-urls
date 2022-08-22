@@ -48,6 +48,13 @@
         ]
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "mediact/coding-standard-phpstorm": true,
+            "mediact/composer-unclog-plugin": true,
+            "phpro/grumphp": true,
+            "mediact/testing-suite": true,
+            "magento/composer-dependency-version-audit-plugin": true
+        }
     }
 }
