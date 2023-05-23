@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+// phpcs:disable Magento2.PHP.FinalImplementation.FoundFinal
+
 namespace Elgentos\AlternateUrls\Model;
 
 final class AlternateUrl

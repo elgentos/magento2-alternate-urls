@@ -17,20 +17,6 @@ use Magento\Store\Model\StoreManagerInterface;
 
 class CmsPage extends AbstractType implements TypeInterface, ArgumentInterface
 {
-    public function __construct(
-        Json $serializer,
-        ScopeConfigInterface $scopeConfig,
-        StoreManagerInterface $storeManager,
-        RequestInterface $request
-    ) {
-        parent::__construct(
-            $serializer,
-            $scopeConfig,
-            $storeManager,
-            $request
-        );
-    }
-
     public function getAlternateUrls(): array
     {
         /** @var Store $currentStore */

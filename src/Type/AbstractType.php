@@ -57,6 +57,7 @@ abstract class AbstractType
             return $storeUrl;
         }
 
+        // phpcs:ignore Magento2.Functions.DiscouragedFunction.Discouraged
         $storeParsedUrl     = parse_url($storeUrl);
         $requestStringParts = explode('?', $requestString, 2);
         $requestStringPath  = $requestStringParts[0];
