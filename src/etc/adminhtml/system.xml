@@ -22,8 +22,13 @@
                     <frontend_model>Elgentos\AlternateUrls\Block\Adminhtml\Form\Field\AlternateUrls</frontend_model>
                     <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
                 </field>
+                <field id="remove_url_params" translate="label" type="select" showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Remove Parameters from URLs</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
         </section>
-
     </system>
 </config>

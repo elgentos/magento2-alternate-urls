@@ -7,15 +7,16 @@ namespace Elgentos\AlternateUrls\Type;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\Escaper;
 use Magento\Framework\Serialize\Serializer\Json;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 
 abstract class AbstractType
 {
+    private const XML_PATH_URL_MAPPING = 'alternate_urls/general/mapping',
+        XML_PATH_REMOVE_URL_PARAMS     = 'alternate_urls/general/remove_url_params';
+
     private Json $serializer;
 
     private ScopeConfigInterface $scopeConfig;
@@ -40,9 +41,17 @@ abstract class AbstractType
     {
         return $this->serializer->unserialize(
             $this->scopeConfig->getValue(
-                'alternate_urls/general/mapping',
+                self::XML_PATH_URL_MAPPING,
                 ScopeInterface::SCOPE_STORE
             )
+        );
+    }
+
+    private function getRemoveUrlParams(): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_REMOVE_URL_PARAMS,
+            ScopeInterface::SCOPE_STORE
         );
     }
 
@@ -68,5 +77,14 @@ abstract class AbstractType
             . (isset($storeParsedUrl['port']) ? ':' . $storeParsedUrl['port'] : '')
             . $storeParsedUrl['path']
             . $requestStringPath;
+    }
+
+    public function modifyUrl(string $url): string
+    {
+        if (!$this->getRemoveUrlParams()) {
+            return $url;
+        }
+
+        return explode($url, '?', 2)[0] ?? $url;
     }
 }

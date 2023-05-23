@@ -10,7 +10,6 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product as ProductModel;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\Escaper;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Registry;
 use Magento\Framework\Serialize\Serializer\Json;
@@ -52,20 +51,26 @@ class Product extends AbstractType implements TypeInterface, ArgumentInterface
             return [];
         }
 
-        $result = [];
+        return array_reduce(
+            $this->getMapping(),
+            function (array $carry, array $item) {
+                try {
+                    $product = $this->getStoreProduct((int) $item['store_id']);
+                } catch (NoSuchEntityException $e) {
+                    return $carry;
+                }
 
-        foreach ($this->getMapping() as $item) {
-            try {
-                $result[] = new AlternateUrl(
-                    $item['hreflang'],
-                    $this->getStoreProduct((int) $item['store_id'])->getProductUrl()
-                );
-            } catch (NoSuchEntityException $e) {
-                continue;
-            }
-        }
+                if ($product instanceof ProductModel && $product->getId()) {
+                    $carry[] = new AlternateUrl(
+                        $item['hreflang'],
+                        $this->modifyUrl($product->getProductUrl())
+                    );
+                }
 
-        return $result;
+                return $carry;
+            },
+            []
+        );
     }
 
     private function getCurrentProduct(): ?ProductInterface
@@ -78,19 +83,36 @@ class Product extends AbstractType implements TypeInterface, ArgumentInterface
      */
     private function getStoreProduct(
         int $storeId
-    ): ProductModel {
-        $currentStore   = $this->storeManager->getStore();
+    ): ?ProductInterface {
+        /** @var ProductInterface&ProductModel $currentProduct */
         $currentProduct = $this->getCurrentProduct();
 
-        /** @var ProductModel $product */
-        $product = $currentStore->getId() === $storeId
-            ? $currentProduct
-            : $this->productRepository->getById(
-                $currentProduct->getId(),
-                false,
-                $storeId
-            );
+        $currentStore   = $this->storeManager->getStore();
+        $websiteId      = $this->getWebsiteByStoreId($storeId);
+        $result         = null;
 
-        return $product;
+        if (!in_array($websiteId, $currentProduct->getWebsiteIds(), true)) {
+            try {
+                $result = $currentStore->getId() === $storeId
+                    ? $currentProduct
+                    : $this->productRepository->getById(
+                        $currentProduct->getId(),
+                        false,
+                        $storeId
+                    );
+            } catch (NoSuchEntityException $e) {
+                return null;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @throws NoSuchEntityException
+     */
+    private function getWebsiteByStoreId(int $storeId): int
+    {
+        return (int) $this->storeManager->getStore($storeId)->getWebsiteId();
     }
 }

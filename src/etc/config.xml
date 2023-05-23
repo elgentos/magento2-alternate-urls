@@ -5,6 +5,7 @@
             <general>
                 <enabled>0</enabled>
                 <mapping />
+                <remove_store_param/>
             </general>
         </alternate_urls>
     </default>

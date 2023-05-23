@@ -22,10 +22,6 @@ use Elgentos\AlternateUrls\Block\Adminhtml\Form\Field\StoreCodeColumn;
  */
 class StoreCodeColumnTest extends TestCase
 {
-    /**
-     * @covers ::__construct
-     * @covers ::setInputId
-     */
     public function testSetInputId(): void
     {
         $inputId = 'foobar_id';
@@ -39,10 +35,6 @@ class StoreCodeColumnTest extends TestCase
         $this->assertEquals($inputId, $subject->getId());
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::setInputName
-     */
     public function testSetInputName(): void
     {
         $inputName = 'foobar';
@@ -56,11 +48,6 @@ class StoreCodeColumnTest extends TestCase
         $this->assertEquals($inputName, $subject->getData('name'));
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::_toHtml
-     * @covers ::getSourceOptions
-     */
     public function testToHtml(): void
     {
         $storesManager = $this->createMock(StoreManagerInterface::class);

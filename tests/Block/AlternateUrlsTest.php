@@ -24,8 +24,6 @@ class AlternateUrlsTest extends TestCase
 {
     /**
      * @covers ::getTypeInstance
-     * @covers ::isEnabled
-     * @covers ::__construct
      *
      * @dataProvider setDataProvider
      */
