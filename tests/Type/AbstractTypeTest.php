@@ -25,6 +25,8 @@ use Elgentos\AlternateUrls\Type\AbstractType;
 class AbstractTypeTest extends TestCase
 {
     /**
+     * @covers ::getMapping
+     *
      * @dataProvider setMappingDataProvider
      */
     public function testGetMapping()
@@ -52,6 +54,8 @@ class AbstractTypeTest extends TestCase
     }
 
     /**
+     * @covers ::getCurrentUrlWithoutParameters
+     *
      * @dataProvider setCurrentUrlDataSet
      */
     public function testGetCurrentUrlWithoutParameters(

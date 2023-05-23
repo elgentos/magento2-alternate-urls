@@ -23,7 +23,7 @@
         "magento/module-catalog": "^103.0.7||^104.0"
     },
     "require-dev": {
-        "youwe/coding-standard-magento2": "^1.7.0",
+        "youwe/coding-standard-magento2": "^2.0.0",
         "youwe/testing-suite": "^2.9"
     },
     "repositories": {
@@ -54,7 +54,8 @@
             "magento/composer-dependency-version-audit-plugin": true,
             "youwe/coding-standard-phpstorm": true,
             "phpro/grumphp-shim": true,
-            "youwe/testing-suite": true
+            "youwe/testing-suite": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     }
 }
